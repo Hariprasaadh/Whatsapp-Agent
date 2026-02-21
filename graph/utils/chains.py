@@ -1,8 +1,8 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from pydantic import BaseModel, Field
 
-from core.prompts import CONVERSATION_PROMPT, ROUTER_PROMPT
-from core.graph.utils.helpers import AsteriskRemovalParser, get_chat_model
+from prompts import CONVERSATION_PROMPT, ROUTER_PROMPT
+from graph.utils.helpers import AsteriskRemovalParser, get_chat_model
 
 
 class RouterResponse(BaseModel):

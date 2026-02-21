@@ -10,7 +10,7 @@ An AI-powered conversational agent built with **LangGraph**, featuring long-term
 |---|---|
 | Conversational AI | Groq — `llama-3.1-8b-instant` |
 | Speech-to-Text | Groq — `whisper-large-v3-turbo` |
-| Text-to-Speech | edge-tts (Microsoft Edge, free) |
+| Text-to-Speech | edge-tts (Microsoft Edge) |
 | Image Generation | RapidAPI Flux |
 | Vision / Image-to-Text | Groq — `llama-4-scout-17b-16e-instruct` |
 | Long-term Memory | Qdrant Cloud + `all-MiniLM-L6-v2` embeddings |
@@ -49,30 +49,34 @@ Response
 
 ```
 Whatsapp-Agent/
-├── core/
-│   ├── settings.py              # Pydantic-settings config (.env)
-│   ├── prompts.py               # All LLM prompts
-│   ├── graph/
-│   │   ├── graph.py             # LangGraph StateGraph definition
-│   │   ├── nodes.py             # All graph nodes
-│   │   ├── edges.py             # Conditional edge logic
-│   │   ├── state.py             # AICompanionState TypedDict
-│   │   └── utils/
-│   │       ├── chains.py        # LangChain chain factories
-│   │       └── helpers.py       # Module getters, parsers
-│   └── modules/
-│       ├── image/
-│       │   ├── text_to_image.py # RapidAPI Flux image generation
-│       │   └── image_to_text.py # Groq vision
-│       ├── memory/
-│       │   ├── memory_manager.py
-│       │   └── vector_store.py  # Qdrant singleton
-│       └── speech/
-│           ├── speech_to_text.py
-│           └── text_to_speech.py
-├── demo.py                      # CLI demo (interactive loop)
+├── graph/
+│   ├── graph.py             # LangGraph StateGraph definition
+│   ├── nodes.py             # All graph nodes
+│   ├── edges.py             # Conditional edge logic
+│   ├── state.py             # AICompanionState TypedDict
+│   ├── __init__.py
+│   └── utils/
+│       ├── chains.py        # LangChain chain factories
+│       └── helpers.py       # Module getters, parsers
+├── modules/
+│   ├── image/
+│   │   ├── text_to_image.py # RapidAPI Flux image generation
+│   │   └── image_to_text.py # Groq vision
+│   ├── memory/
+│   │   ├── memory_manager.py
+│   │   └── vector_store.py  # Qdrant singleton
+│   └── speech/
+│       ├── speech_to_text.py
+│       └── text_to_speech.py
+├── whatsapp/                # WhatsApp integration (webhook etc.)
+├── generated/
+│   ├── audio/               # Saved TTS audio files (.mp3)
+│   └── image/               # Saved generated images (.webp)
+├── settings.py              # Pydantic-settings config (.env)
+├── prompts.py               # All LLM prompts
+├── demo.py                  # CLI demo (interactive loop)
 ├── requirements.txt
-└── .env                         # API keys (not committed)
+└── .env                     # API keys (not committed)
 ```
 
 ---
@@ -123,11 +127,11 @@ You: hey, my name is Alex
 
 You: can you generate an image of a dog on Mars
 [Agent]: Here's your image!
-[Image saved]: generated_images/image_<uuid>.webp
+[Image saved]: generated/image/image_<uuid>.webp
 
 You: say that out loud
 [Agent]: Sure!
-[Audio saved]: demo_audio.mp3
+[Audio saved]: generated/audio/audio_<uuid>.mp3
 ```
 
 **Routing keywords** (handled automatically by the LLM router):

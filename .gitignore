@@ -1,6 +1,5 @@
 # Environment
 .env
-.env.*
 
 # Python
 __pycache__/
@@ -16,8 +15,7 @@ env/
 gpu/
 
 # Generated files
-generated_images/
-demo_audio.mp3
+generated/
 *.mp3
 *.wav
 *.png

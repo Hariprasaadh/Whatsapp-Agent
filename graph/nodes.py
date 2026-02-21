@@ -1,20 +1,24 @@
 import logging
 import os
+from pathlib import Path
 from uuid import uuid4
+
+# Absolute path to the project root (parent of the graph/ package)
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 from langchain_core.messages import AIMessage, HumanMessage, RemoveMessage
 from langchain_core.runnables import RunnableConfig
 
-from core.graph.state import AICompanionState
-from core.graph.utils.chains import get_conversation_chain, get_router_chain
-from core.graph.utils.helpers import (
+from graph.state import AICompanionState
+from graph.utils.chains import get_conversation_chain, get_router_chain
+from graph.utils.helpers import (
     get_chat_model,
     get_image_to_text_module,
     get_text_to_image_module,
     get_text_to_speech_module,
 )
-from core.modules.memory.memory_manager import get_memory_manager
-from core.settings import settings
+from modules.memory.memory_manager import get_memory_manager
+from settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +55,9 @@ async def image_node(state: AICompanionState, config: RunnableConfig):
     scenario = await text_to_image_module.create_scenario(state["messages"][-5:])
     logger.info(f"[image_node] Image prompt: {scenario.image_prompt}")
 
-    os.makedirs("generated_images", exist_ok=True)
-    img_path = f"generated_images/image_{str(uuid4())}.png"
+    img_dir = _PROJECT_ROOT / settings.GENERATED_IMAGE_DIR
+    img_dir.mkdir(parents=True, exist_ok=True)
+    img_path = str(img_dir / f"image_{str(uuid4())}.png")
     logger.info(f"[image_node] Calling RapidAPI Flux to generate image -> {img_path}")
     img_path = await text_to_image_module.generate_image(scenario.image_prompt, img_path)
     logger.info(f"[image_node] Image saved: {img_path}")
@@ -79,10 +84,16 @@ async def audio_node(state: AICompanionState, config: RunnableConfig):
         config,
     )
     logger.info(f"[audio_node] Text to synthesize: {response[:120]}..." if len(response) > 120 else f"[audio_node] Text to synthesize: {response}")
-    logger.info("[audio_node] Calling ElevenLabs TTS...")
+    logger.info("[audio_node] Calling TTS...")
     output_audio = await text_to_speech_module.synthesize(response)
     logger.info(f"[audio_node] Audio generated: {len(output_audio)} bytes")
-    return {"messages": AIMessage(content=response), "audio_buffer": output_audio}
+    audio_dir = _PROJECT_ROOT / settings.GENERATED_AUDIO_DIR
+    audio_dir.mkdir(parents=True, exist_ok=True)
+    audio_path = str(audio_dir / f"audio_{str(uuid4())}.mp3")
+    with open(audio_path, "wb") as f:
+        f.write(output_audio)
+    logger.info(f"[audio_node] Audio saved: {audio_path}")
+    return {"messages": AIMessage(content=response), "audio_buffer": output_audio, "audio_path": audio_path}
 
 
 async def summarize_conversation_node(state: AICompanionState):

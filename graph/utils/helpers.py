@@ -3,10 +3,10 @@ import re
 from langchain_core.output_parsers import StrOutputParser
 from langchain_groq import ChatGroq
 
-from core.modules.image.image_to_text import ImageToText
-from core.modules.image.text_to_image import TextToImage
-from core.modules.speech import TextToSpeech
-from core.settings import settings
+from modules.image.image_to_text import ImageToText
+from modules.image.text_to_image import TextToImage
+from modules.speech import TextToSpeech
+from settings import settings
 
 
 def get_chat_model(temperature: float = 0.7):

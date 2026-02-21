@@ -7,7 +7,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_groq import ChatGroq
 from pydantic import BaseModel, Field
 
-from core.settings import settings
+from settings import settings
 
 RAPIDAPI_TTI_URL = "https://ai-text-to-image-generator-flux-free-api.p.rapidapi.com/aaaaaaaaaaaaaaaaaiimagegenerator/quick.php"
 RAPIDAPI_HOST = "ai-text-to-image-generator-flux-free-api.p.rapidapi.com"

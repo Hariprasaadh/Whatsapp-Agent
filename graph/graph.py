@@ -2,11 +2,11 @@ from functools import lru_cache
 
 from langgraph.graph import END, START, StateGraph
 
-from core.graph.edges import (
+from graph.edges import (
     select_workflow,
     should_summarize_conversation,
 )
-from core.graph.nodes import (
+from graph.nodes import (
     audio_node,
     conversation_node,
     image_node,
@@ -15,7 +15,7 @@ from core.graph.nodes import (
     router_node,
     summarize_conversation_node,
 )
-from core.graph.state import AICompanionState
+from graph.state import AICompanionState
 
 
 @lru_cache(maxsize=1)

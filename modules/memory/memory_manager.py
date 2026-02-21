@@ -3,9 +3,9 @@ import uuid
 from datetime import datetime
 from typing import List, Optional
 
-from core.prompts import MEMORY_ANALYSIS_PROMPT
-from core.modules.memory.vector_store import get_vector_store
-from core.settings import settings
+from prompts import MEMORY_ANALYSIS_PROMPT
+from modules.memory.vector_store import get_vector_store
+from settings import settings
 from langchain_core.messages import BaseMessage
 from langchain_groq import ChatGroq
 from pydantic import BaseModel, Field

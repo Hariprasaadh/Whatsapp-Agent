@@ -2,7 +2,7 @@ import os
 import tempfile
 from typing import Optional
 
-from core.settings import settings
+from settings import settings
 from groq import Groq
 
 

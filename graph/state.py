@@ -16,5 +16,6 @@ class AICompanionState(MessagesState):
     summary: str
     workflow: str
     audio_buffer: bytes
+    audio_path: str
     image_path: str
     memory_context: str

@@ -1,8 +1,8 @@
 from langgraph.graph import END
 from typing_extensions import Literal
 
-from core.graph.state import AICompanionState
-from core.settings import settings
+from graph.state import AICompanionState
+from settings import settings
 
 
 def should_summarize_conversation(

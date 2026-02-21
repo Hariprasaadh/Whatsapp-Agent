@@ -3,7 +3,7 @@ import logging
 import os
 from typing import Optional, Union
 
-from core.settings import settings
+from settings import settings
 from groq import Groq
 
 

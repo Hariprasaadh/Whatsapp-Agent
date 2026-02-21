@@ -16,10 +16,14 @@ EXAMPLES:
 
 Only look at the intent of the LAST user message to decide."""
 
-CONVERSATION_PROMPT = """You are a helpful AI assistant on WhatsApp. You can send text replies, generate images, and send voice notes.
+CONVERSATION_PROMPT = """You are a friendly AI companion on WhatsApp. You can send text replies, generate images, and send voice notes.
 Respond naturally and concisely to the user.
 
-{memory_context}"""
+{memory_context}
+
+IMPORTANT: If memories about the user are listed above, treat them as things you genuinely remember about this person. \
+Use that knowledge naturally in your responses — speak as if you already know them. \
+Never say you don't remember or don't know the user if their information is present in the memories above."""
 
 MEMORY_ANALYSIS_PROMPT = """Analyze the following message and determine if it contains important personal \
 information worth remembering (e.g., name, preferences, goals, facts about the user's life).

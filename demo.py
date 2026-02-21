@@ -11,7 +11,7 @@ logging.basicConfig(
 )
 
 print("[startup] Loading modules... (this may take 10-30s on first run)")
-from core.graph.graph import graph
+from graph.graph import graph
 print("[startup] All modules loaded. Ready.\n")
 
 
