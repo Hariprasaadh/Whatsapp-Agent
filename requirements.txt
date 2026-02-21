@@ -1,0 +1,10 @@
+langchain-core
+langchain-groq
+langgraph
+groq
+edge-tts
+aiohttp
+qdrant-client
+sentence-transformers
+pydantic-settings
+pydantic

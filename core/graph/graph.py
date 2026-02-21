@@ -1,0 +1,45 @@
+from functools import lru_cache
+
+from langgraph.graph import END, START, StateGraph
+
+from core.graph.edges import (
+    select_workflow,
+    should_summarize_conversation,
+)
+from core.graph.nodes import (
+    audio_node,
+    conversation_node,
+    image_node,
+    memory_extraction_node,
+    memory_injection_node,
+    router_node,
+    summarize_conversation_node,
+)
+from core.graph.state import AICompanionState
+
+
+@lru_cache(maxsize=1)
+def create_workflow_graph():
+    graph_builder = StateGraph(AICompanionState)
+
+    graph_builder.add_node("memory_extraction_node", memory_extraction_node)
+    graph_builder.add_node("router_node", router_node)
+    graph_builder.add_node("memory_injection_node", memory_injection_node)
+    graph_builder.add_node("conversation_node", conversation_node)
+    graph_builder.add_node("image_node", image_node)
+    graph_builder.add_node("audio_node", audio_node)
+    graph_builder.add_node("summarize_conversation_node", summarize_conversation_node)
+
+    graph_builder.add_edge(START, "memory_extraction_node")
+    graph_builder.add_edge("memory_extraction_node", "router_node")
+    graph_builder.add_edge("router_node", "memory_injection_node")
+    graph_builder.add_conditional_edges("memory_injection_node", select_workflow)
+    graph_builder.add_conditional_edges("conversation_node", should_summarize_conversation)
+    graph_builder.add_conditional_edges("image_node", should_summarize_conversation)
+    graph_builder.add_conditional_edges("audio_node", should_summarize_conversation)
+    graph_builder.add_edge("summarize_conversation_node", END)
+
+    return graph_builder
+
+
+graph = create_workflow_graph().compile()
