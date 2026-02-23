@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: whatsapp-agent
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn whatsapp.webhook_endpoint:app --host 0.0.0.0 --port $PORT
+    disk:
+      name: app-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: WHATSAPP_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_VERIFY_TOKEN
+        sync: false
+      - key: QDRANT_URL
+        sync: false
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: RAPIDAPI_KEY
+        sync: false
+      - key: SHORT_TERM_MEMORY_DB_PATH
+        value: /app/data/memory.db

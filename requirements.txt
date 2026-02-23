@@ -1,6 +1,7 @@
 langchain-core
 langchain-groq
 langgraph
+langgraph-checkpoint-sqlite
 groq
 edge-tts
 aiohttp
@@ -8,3 +9,7 @@ qdrant-client
 sentence-transformers
 pydantic-settings
 pydantic
+fastapi
+uvicorn[standard]
+httpx
+python-multipart
