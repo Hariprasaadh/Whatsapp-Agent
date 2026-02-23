@@ -7,7 +7,6 @@ from typing import List, Optional
 from settings import settings
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
-from sentence_transformers import SentenceTransformer
 
 
 @dataclass
@@ -47,6 +46,7 @@ class VectorStore:
     def __init__(self) -> None:
         if not self._initialized:
             self._validate_env_vars()
+            from sentence_transformers import SentenceTransformer  # lazy import to avoid slow torch load at startup
             self.model = SentenceTransformer(self.EMBEDDING_MODEL)
             self.client = QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
             self._initialized = True
