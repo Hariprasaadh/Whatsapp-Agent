@@ -24,10 +24,14 @@ class Settings(BaseSettings):
     TOTAL_MESSAGES_SUMMARY_TRIGGER: int = 20
     TOTAL_MESSAGES_AFTER_SUMMARY: int = 5
 
-    SHORT_TERM_MEMORY_DB_PATH: str = "/app/data/memory.db"
+    SHORT_TERM_MEMORY_DB_PATH: str = "data/memory.db"
 
     GENERATED_AUDIO_DIR: str = "generated/audio"
     GENERATED_IMAGE_DIR: str = "generated/image"
+
+    WHATSAPP_TOKEN: Optional[str] = None
+    WHATSAPP_PHONE_NUMBER_ID: Optional[str] = None
+    WHATSAPP_VERIFY_TOKEN: Optional[str] = None
 
 
 settings = Settings()

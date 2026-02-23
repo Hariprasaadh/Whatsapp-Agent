@@ -27,15 +27,15 @@ image_to_text = ImageToText()
 whatsapp_router = APIRouter()
 
 # WhatsApp API credentials
-WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
-WHATSAPP_PHONE_NUMBER_ID = os.getenv("WHATSAPP_PHONE_NUMBER_ID")
+WHATSAPP_TOKEN = settings.WHATSAPP_TOKEN
+WHATSAPP_PHONE_NUMBER_ID = settings.WHATSAPP_PHONE_NUMBER_ID
 
 
 @whatsapp_router.get("/whatsapp_response")
 async def whatsapp_verify(request: Request) -> Response:
     """Handles webhook verification from the WhatsApp Cloud API."""
     params = request.query_params
-    if params.get("hub.verify_token") == os.getenv("WHATSAPP_VERIFY_TOKEN"):
+    if params.get("hub.verify_token") == settings.WHATSAPP_VERIFY_TOKEN:
         return Response(content=params.get("hub.challenge"), status_code=200)
     return Response(content="Verification token mismatch", status_code=403)
 
@@ -72,6 +72,7 @@ async def whatsapp_handler(request: Request) -> Response:
                 content = message["text"]["body"]
 
             # Process message through the graph agent
+            os.makedirs(os.path.dirname(os.path.abspath(settings.SHORT_TERM_MEMORY_DB_PATH)), exist_ok=True)
             async with AsyncSqliteSaver.from_conn_string(settings.SHORT_TERM_MEMORY_DB_PATH) as short_term_memory:
                 graph = graph_builder.compile(checkpointer=short_term_memory)
                 await graph.ainvoke(
@@ -98,7 +99,7 @@ async def whatsapp_handler(request: Request) -> Response:
                 success = await send_response(from_number, response_message, "text")
 
             if not success:
-                return Response(content="Failed to send message", status_code=500)
+                logger.error("Failed to send WhatsApp message, but acknowledging webhook to prevent retries")
 
             return Response(content="Message processed", status_code=200)
 
@@ -193,15 +194,15 @@ async def send_response(
             "text": {"body": response_text},
         }
 
-    print(headers)
-    print(json_data)
-
     async with httpx.AsyncClient() as client:
         response = await client.post(
             f"https://graph.facebook.com/v21.0/{WHATSAPP_PHONE_NUMBER_ID}/messages",
             headers=headers,
             json=json_data,
         )
+
+    if response.status_code != 200:
+        logger.error(f"WhatsApp API error {response.status_code}: {response.text}")
 
     return response.status_code == 200
 
