@@ -26,3 +26,5 @@ services:
         sync: false
       - key: SHORT_TERM_MEMORY_DB_PATH
         value: /app/data/memory.db
+      - key: PYTHON_VERSION
+        value: "3.11.9"
