@@ -20,6 +20,10 @@ An AI-powered conversational agent built with **LangGraph**, featuring long-term
 
 ## Architecture
 
+![WhatsApp AI Agent Architecture](architecture-diagram.png)
+
+> The diagram above illustrates the end-to-end flow of the WhatsApp AI Agent. Incoming messages from the **Meta WhatsApp Cloud API** hit a **FastAPI webhook**, which preprocesses the content (transcribing audio via Groq Whisper, or describing images via Groq Vision) before passing it into the **LangGraph Agent Graph**. The graph runs a fixed sequence — extracting long-term memories, routing intent, injecting relevant context — then branches into one of three response nodes: **Conversation** (text), **Image** (AI-generated via Flux), or **Audio** (synthesized via Edge TTS). A summarization node periodically compresses long conversation histories. All state is persisted across turns using a dual memory system: **SQLite** for short-term per-user threads and **Qdrant** for semantic long-term memory.
+
 ```
 User Message
      │
@@ -42,6 +46,8 @@ summarize_node (optional) ← trims history when message count is high
      ▼
 Response
 ```
+
+</details>
 
 ---
 
