@@ -10,7 +10,7 @@ from langchain_core.messages import AIMessage, HumanMessage, RemoveMessage
 from langchain_core.runnables import RunnableConfig
 
 from graph.state import AICompanionState
-from graph.utils.chains import get_conversation_chain, get_router_chain
+from graph.utils.chains import get_audio_chain, get_conversation_chain, get_image_caption_chain, get_router_chain
 from graph.utils.helpers import (
     get_chat_model,
     get_image_to_text_module,
@@ -48,7 +48,7 @@ async def conversation_node(state: AICompanionState, config: RunnableConfig):
 async def image_node(state: AICompanionState, config: RunnableConfig):
     logger.info("[image_node] Starting image generation flow...")
     memory_context = state.get("memory_context", "")
-    chain = get_conversation_chain(state.get("summary", ""))
+    chain = get_image_caption_chain(state.get("summary", ""))
     text_to_image_module = get_text_to_image_module()
 
     logger.info("[image_node] Creating image scenario from conversation...")
@@ -76,7 +76,7 @@ async def image_node(state: AICompanionState, config: RunnableConfig):
 async def audio_node(state: AICompanionState, config: RunnableConfig):
     logger.info("[audio_node] Generating audio response...")
     memory_context = state.get("memory_context", "")
-    chain = get_conversation_chain(state.get("summary", ""))
+    chain = get_audio_chain(state.get("summary", ""))
     text_to_speech_module = get_text_to_speech_module()
 
     response = await chain.ainvoke(

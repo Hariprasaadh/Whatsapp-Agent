@@ -1,7 +1,9 @@
+import io
 import os
 from typing import List
 
 import aiohttp
+from PIL import Image
 from langchain_core.messages import AnyMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_groq import ChatGroq
@@ -115,10 +117,11 @@ class TextToImage:
             if parent_dir:
                 os.makedirs(parent_dir, exist_ok=True)
 
+            # Convert to JPEG (WhatsApp API requires JPEG or PNG, not WEBP)
             base = os.path.splitext(output_path)[0]
-            output_path = f"{base}.webp"
-            with open(output_path, "wb") as fh:
-                fh.write(image_bytes)
+            output_path = f"{base}.jpg"
+            img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+            img.save(output_path, format="JPEG", quality=90)
 
             return output_path
 

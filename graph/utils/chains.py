@@ -1,7 +1,7 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from pydantic import BaseModel, Field
 
-from prompts import CONVERSATION_PROMPT, ROUTER_PROMPT
+from prompts import AUDIO_PROMPT, CONVERSATION_PROMPT, IMAGE_CAPTION_PROMPT, ROUTER_PROMPT
 from graph.utils.helpers import AsteriskRemovalParser, get_chat_model
 
 
@@ -17,6 +17,32 @@ def get_router_chain():
         [("system", ROUTER_PROMPT), MessagesPlaceholder(variable_name="messages")]
     )
     return prompt | model
+
+
+def get_image_caption_chain(summary: str = ""):
+    system_message = IMAGE_CAPTION_PROMPT
+    if summary:
+        system_message += f"\n\nSummary of conversation so far: {summary}"
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", system_message),
+            MessagesPlaceholder(variable_name="messages"),
+        ]
+    )
+    return prompt | get_chat_model() | AsteriskRemovalParser()
+
+
+def get_audio_chain(summary: str = ""):
+    system_message = AUDIO_PROMPT
+    if summary:
+        system_message += f"\n\nSummary of conversation so far: {summary}"
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", system_message),
+            MessagesPlaceholder(variable_name="messages"),
+        ]
+    )
+    return prompt | get_chat_model() | AsteriskRemovalParser()
 
 
 def get_conversation_chain(summary: str = ""):

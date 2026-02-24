@@ -3,6 +3,7 @@
 
 import logging
 import os
+from collections import OrderedDict
 from io import BytesIO
 from typing import Dict
 
@@ -22,6 +23,10 @@ logger = logging.getLogger(__name__)
 speech_to_text = SpeechToText()
 text_to_speech = TextToSpeech()
 image_to_text = ImageToText()
+
+# Deduplication cache: stores recently seen message IDs (max 500 entries)
+_PROCESSED_MESSAGE_IDS: OrderedDict = OrderedDict()
+_MAX_CACHE_SIZE = 500
 
 # Router for WhatsApp respo
 whatsapp_router = APIRouter()
@@ -48,6 +53,16 @@ async def whatsapp_handler(request: Request) -> Response:
         change_value = data["entry"][0]["changes"][0]["value"]
         if "messages" in change_value:
             message = change_value["messages"][0]
+            message_id = message.get("id", "")
+
+            # Deduplicate: Meta delivers the same webhook from multiple data centers
+            if message_id in _PROCESSED_MESSAGE_IDS:
+                logger.debug(f"[dedup] Skipping already-processed message {message_id}")
+                return Response(content="Duplicate message", status_code=200)
+            _PROCESSED_MESSAGE_IDS[message_id] = True
+            if len(_PROCESSED_MESSAGE_IDS) > _MAX_CACHE_SIZE:
+                _PROCESSED_MESSAGE_IDS.popitem(last=False)  # evict oldest
+
             from_number = message["from"]
             session_id = from_number
 
@@ -169,7 +184,7 @@ async def send_response(
 
     if message_type in ["audio", "image"]:
         try:
-            mime_type = "audio/mpeg" if message_type == "audio" else "image/png"
+            mime_type = "audio/mpeg" if message_type == "audio" else "image/jpeg"
             media_buffer = BytesIO(media_content)
             media_id = await upload_media(media_buffer, mime_type)
             json_data = {
