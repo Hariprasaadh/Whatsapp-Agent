@@ -18,7 +18,6 @@ gpu/
 generated/
 *.mp3
 *.wav
-*.png
 *.jpg
 *.jpeg
 
